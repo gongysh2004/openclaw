@@ -3,7 +3,7 @@
   - [1.2. 安装 Node.js](#12-安装-nodejs)
   - [1.3. 源代码安装](#13-源代码安装)
     - [1.3.1. 安装 pnpm（从源码构建时需要）](#131-安装-pnpm从源码构建时需要)
-    - [1.3.2. 安装 Clawdbot](#132-安装-clawdbot)
+    - [1.3.2. 安装 Openclaw](#132-安装-openclaw)
   - [1.4. 自动安装](#14-自动安装)
   - [1.5. 配置](#15-配置)
   - [1.6. extra tools](#16-extra-tools)
@@ -17,6 +17,9 @@
   - [3.3. android 手机](#33-android-手机)
 - [4. 端口使用情况](#4-端口使用情况)
 - [docker](#docker)
+- [参考](#参考)
+- [ollama](#ollama)
+- [openclaw service](#openclaw-service)
 
 远程模式
 
@@ -70,7 +73,7 @@ npm config set registry https://registry.npmjs.org  # 恢复默认源（可选�
 pnpm -v
 ```
 
-### 1.3.2. 安装 Clawdbot
+### 1.3.2. 安装 Openclaw
 
 ```
 git clone git@github.com:gongysh2004/openclaw.git
@@ -215,3 +218,274 @@ node \*-- remote gateway
 
 export OPENCLAW_HOME_VOLUME="openclaw_home"
 ./docker-setup.sh
+
+# 参考
+
+[手把手教你安装OpenClaw并接入飞书，让AI在聊天软件里帮你干活](https://cloud.tencent.com/developer/article/2626160)
+cli_a90062446f395bcd
+EIcDSWdHPs96p8LkPhMc4f5Kw06eDrrx
+
+[解锁 AI 助手新姿势！90%的运维都是如何使用 OpenClaw 的](https://mp.weixin.qq.com/s/jgNQwNghqCoT-JBqUD_tnw)
+
+zi pu
+8af8fb26508f4e9f9a901d1d53229f12.wHy2T6ju1LY7GQSX
+
+# ollama
+
+配置
+
+```
+cat ~/.openclaw/openclaw.json
+  "models": {
+    "providers": {
+      "ollama": {
+        "baseUrl": "http://127.0.0.1:11434/v1",
+        "apiKey": "ollama-local",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "qwen3-coder-next",
+            "name": "qwen3-coder-next",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 131072,
+            "maxTokens": 16384
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "ollama/qwen3-coder-next"
+      },
+      "workspace": "/root/.openclaw/workspace",
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    }
+  }
+```
+
+ollama cloud
+373515dfc5a44ba3be847055472639db.0wY_NKcZBpxR51MJ5SVswPbx
+
+```
+root@gongysh-1:~# ollama list
+NAME                       ID              SIZE     MODIFIED
+qwen3-coder-next:latest    ca06e9e4087c    51 GB    2 weeks ago
+glm-4.7:cloud              023608864819    -        2 weeks ago
+```
+
+```newconfig.yaml
+model_list:
+  # ==================== OpenAI Models ====================
+  - model_name: qwen3-coder-next-openai
+    litellm_params:
+      # use openai provider instead of ollama, which
+      model: openai/qwen3-coder-next:latest
+      api_base: http://192.168.99.213:11434/v1
+      api_key: sk-tewt
+      num_retries: 3
+      timeout: 300
+      stream_timeout: 60
+      drop_params: true
+
+general_settings:
+  # ==================== 全局重试和超时 ====================
+  num_retries: 2
+  timeout: 600
+  request_timeout: 600
+  set_verbose: false
+
+```
+
+```
+ litellm --config  newconfig.yml --host 0.0.0.0 --port 4000 --debug
+```
+
+note: we should use openai provider to access ollama api in the newconfig file, we need more model info in its supported_openai_params section:
+
+```
+    "supported_openai_params": [
+      "frequency_penalty",
+      "logit_bias",
+      "logprobs",
+      "top_logprobs",
+      "max_tokens",
+      "max_completion_tokens",
+      "modalities",
+      "prediction",
+      "n",
+      "presence_penalty",
+      "seed",
+      "stop",
+      "stream",
+      "stream_options",
+      "temperature",
+      "top_p",
+      "tools",
+      "tool_choice",
+      "function_call",
+      "functions",
+      "max_retries",
+      "extra_headers",
+      "parallel_tool_calls",
+      "audio",
+      "web_search_options",
+      "service_tier",
+      "safety_identifier",
+      "prompt_cache_key",
+      "prompt_cache_retention",
+      "store",
+      "response_format"
+    ]
+```
+
+```
+# cat ~/.openclaw/openclaw.json
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.9",
+    "lastTouchedAt": "2026-02-10T13:40:40.223Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-10T13:24:55.186Z",
+    "lastRunVersion": "2026.2.9",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local"
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "ollama/qwen3-coder-next"
+      },
+      "workspace": "/root/.openclaw/workspace",
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "litellm": {
+        "baseUrl": "http://172.16.11.60:4000/v1",
+        "apiKey": "sk-any",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "qwen3-coder-next:latest",
+            "name": "Qwen3 Coder Next",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 131072,
+            "maxTokens": 16384
+          }
+        ]
+      },
+      "ollama": {
+        "baseUrl": "http://192.168.99.213:11434/v1",
+        "apiKey": "ollama-local",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "qwen3-coder-next",
+            "name": "qwen3-coder-next",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 131072,
+            "maxTokens": 16384
+          }
+        ]
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true
+  },
+  "channels": {
+    "feishu": {
+      "enabled": true,
+      "accounts": {
+        "main": {
+          "appId": "cli_a90062446f395bcd",
+          "appSecret": "EIcDSWdHPs96p8LkPhMc4f5Kw06eDrrx"
+        }
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "9877e8770d87b3e946d1b4018114370e23ade17894451a5f"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap",
+        "camera.clip",
+        "screen.record",
+        "calendar.add",
+        "contacts.add",
+        "reminders.add"
+      ]
+    }
+  },
+  "plugins": {
+    "entries": {
+      "feishu": {
+        "enabled": true
+      }
+    }
+  }
+}
+```
+
+# openclaw service
+
+```
+cat >/etc/systemd/system/openclaw-gateway.service <<EOF
+[Unit]
+Description=OpenClaw Gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root
+# Minimal PATH so the daemon finds openclaw (adjust if openclaw is elsewhere, e.g. /root/.local/share/pnpm)
+Environment=PATH=/root/.local/share/pnpm/:/usr/local/bin:/usr/bin:/bin:/root/.nvm/versions/node/v22.22.0/bin
+ExecStart=/root/.local/share/pnpm/openclaw gateway run
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
