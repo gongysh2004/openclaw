@@ -16,10 +16,13 @@
   - [3.2. macos 笔记本](#32-macos-笔记本)
   - [3.3. android 手机](#33-android-手机)
 - [4. 端口使用情况](#4-端口使用情况)
-- [docker](#docker)
-- [参考](#参考)
-- [ollama](#ollama)
-- [openclaw service](#openclaw-service)
+- [5. docker](#5-docker)
+- [6. 参考](#6-参考)
+- [7. 本地模型](#7-本地模型)
+  - [7.1. ollama](#71-ollama)
+  - [7.2. litellm](#72-litellm)
+  - [7.3. openclaw 配置](#73-openclaw-配置)
+- [8. openclaw service](#8-openclaw-service)
 
 远程模式
 
@@ -202,8 +205,6 @@ openclaw nodes run --node Linux1 -- df -h
 
 ## 3.3. android 手机
 
-AVREKdDJyqq722SK
-
 # 4. 端口使用情况
 
 端口 用途
@@ -214,25 +215,20 @@ AVREKdDJyqq722SK
 
 node \*-- remote gateway
 
-# docker
+# 5. docker
 
 export OPENCLAW_HOME_VOLUME="openclaw_home"
 ./docker-setup.sh
 
-# 参考
+# 6. 参考
 
 [手把手教你安装OpenClaw并接入飞书，让AI在聊天软件里帮你干活](https://cloud.tencent.com/developer/article/2626160)
-cli_a90062446f395bcd
-EIcDSWdHPs96p8LkPhMc4f5Kw06eDrrx
 
 [解锁 AI 助手新姿势！90%的运维都是如何使用 OpenClaw 的](https://mp.weixin.qq.com/s/jgNQwNghqCoT-JBqUD_tnw)
 
-zi pu
-8af8fb26508f4e9f9a901d1d53229f12.wHy2T6ju1LY7GQSX
+# 7. 本地模型
 
-# ollama
-
-配置
+## 7.1. ollama
 
 ```
 cat ~/.openclaw/openclaw.json
@@ -277,15 +273,14 @@ cat ~/.openclaw/openclaw.json
   }
 ```
 
-ollama cloud
-373515dfc5a44ba3be847055472639db.0wY_NKcZBpxR51MJ5SVswPbx
-
 ```
 root@gongysh-1:~# ollama list
 NAME                       ID              SIZE     MODIFIED
 qwen3-coder-next:latest    ca06e9e4087c    51 GB    2 weeks ago
 glm-4.7:cloud              023608864819    -        2 weeks ago
 ```
+
+## 7.2. litellm
 
 ```newconfig.yaml
 model_list:
@@ -351,6 +346,8 @@ note: we should use openai provider to access ollama api in the newconfig file, 
       "response_format"
     ]
 ```
+
+## 7.3. openclaw 配置
 
 ```
 # cat ~/.openclaw/openclaw.json
@@ -466,7 +463,7 @@ note: we should use openai provider to access ollama api in the newconfig file, 
 }
 ```
 
-# openclaw service
+# 8. openclaw service
 
 ```
 cat >/etc/systemd/system/openclaw-gateway.service <<EOF
